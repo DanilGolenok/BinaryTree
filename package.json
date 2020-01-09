@@ -1,0 +1,15 @@
+{
+  "name": "binarytree",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Danil Golenok",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4"
+  }
+}
