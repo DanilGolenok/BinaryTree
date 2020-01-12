@@ -18,9 +18,11 @@ export default class Tree<T> implements TreeCollection<T> {
     if (root.right != null) this.collect(root.right, array)
   }
 
-  toArray(): Node<T>[] {
+  toArray(node: Node<T> = this.root): Node<T>[] {
+    if (node == null) return []
+
     const array: Node<T>[] = []
-    this.collect(this.root, array)
+    this.collect(node, array)
 
     return array
   }
@@ -42,20 +44,22 @@ export default class Tree<T> implements TreeCollection<T> {
       right: null
     }
 
+    if (this.exists(key)) {
+      this.edit(key, value)
+      return
+    }
+
     if (this.root == null) {
       this.root = node
       return
     }
 
-    // use while
     let iterator: Node<T> = this.root
     let parent: Node<T>
 
     while (iterator != null) {
       parent = iterator
-
-      if (key > iterator.key) iterator = iterator.right
-      else iterator = iterator.left
+      iterator = key > iterator.key ? iterator.right : iterator.left
     }
 
     if (key > parent.key) parent.right = node
@@ -65,11 +69,44 @@ export default class Tree<T> implements TreeCollection<T> {
   }
 
   removeAt(key: string | number): void {
-    throw new Error('Method not implemented.')
+    if (key == null) throw new Error("Key can't be as a null value")
+
+    let iterator: Node<T> = this.root
+    let parent: Node<T> = this.root
+
+    while (iterator != null && iterator.key != key) {
+      parent = iterator
+      iterator = key > iterator.key ? iterator.right : iterator.left
+    }
+
+    if (iterator == null) throw new Error('Key was not found')
+
+    const savedValues = [
+      ...this.toArray(iterator.left),
+      ...this.toArray(iterator.right)
+    ]
+
+    const parentLeftKey = parent.left != null ? parent.left.key : null
+    const parentRightKey = parent.right != null ? parent.right.key : null
+
+    if (parentLeftKey == key) parent.left = null
+    else if (parentRightKey == key) parent.right = null
+
+    savedValues.forEach(node => this.add(node.key, node.value))
   }
 
   remove(node: Node<T>): void {
     throw new Error('Method not implemented.')
+  }
+
+  edit(key: number | string, value: T) {
+    let iterator = this.root
+
+    while (iterator != null && iterator.key != key) {
+      iterator = key > iterator.key ? iterator.right : iterator.left
+    }
+
+    if (iterator != null) iterator.value = value
   }
 
   min(node: Node<T>): Node<T> {
@@ -86,12 +123,28 @@ export default class Tree<T> implements TreeCollection<T> {
     else return node
   }
 
+  exists(key: number | string): boolean {
+    let iterator: Node<T> = this.root
+
+    while (iterator != null && iterator.key != key) {
+      iterator = key > iterator.key ? iterator.right : iterator.left
+    }
+
+    return iterator != null
+  }
+
   find(node: Node<T>): string | number {
     throw new Error('Method not implemented.')
   }
 
   get(key: string | number): Node<T> {
-    throw new Error('Method not implemented.')
+    let iterator: Node<T> = this.root
+
+    while (iterator != null && iterator.key != key) {
+      iterator = key > iterator.key ? iterator.right : iterator.left
+    }
+
+    return iterator
   }
 
   getRoot(): Node<T> {
